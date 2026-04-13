@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>公司圖片投票 (實名制)</title>
+    <title>公司圖片投票系統</title>
     <style>
         :root { --primary: #007bff; --bg: #f8f9fa; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); text-align: center; padding: 20px; }
@@ -14,14 +14,14 @@
         input[type="text"] { padding: 12px; width: 280px; border-radius: 8px; border: 2px solid #ddd; font-size: 1rem; outline: none; transition: 0.3s; }
         input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(0,123,255,0.2); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 12px; overflow: hidden; border: 4px solid transparent; cursor: pointer; transition: 0.25s; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .card:hover { transform: translateY(-5px); }
         
         .card.selected { border-color: var(--primary); transform: scale(1.02); }
         .card.selected::after { content: "✓"; position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; line-height: 28px; font-weight: bold; }
         
-        .card img { width: 100%; height: 200px; object-fit: cover; background: #eee; display: block; }
+        .card img { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; }
         .info { padding: 10px; font-weight: bold; color: #444; }
 
         #submit-btn { margin-top: 40px; padding: 18px 60px; font-size: 1.2rem; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
@@ -36,7 +36,7 @@
 
 <div class="container" id="main-content">
     <div class="header">
-        <h1>📸 公司首輪投票 (17 選 3)</h1>
+        <h1>📸 公司圖片投票 (17 選 3)</h1>
         <div class="login-box">
             <label style="font-weight: bold; display: block; margin-bottom: 10px;">請輸入你的姓名：</label>
             <input type="text" id="userName" placeholder="例如: Peter Chan (HK)" oninput="checkForm()">
@@ -52,18 +52,18 @@
 
 <div id="msg" class="hidden">
     🎉 <strong>投票成功！</strong><br>
-    數據已記錄到 Google Sheet。<br>
+    數據已傳送到 Google Sheet。<br>
     <span class="back-btn" onclick="resetForm()">返回再次投票</span>
 </div>
 
 <script>
     const TOTAL_IMAGES = 17;
     const MAX_VOTES = 3;
-    const SCRIPT_URL = 'https://google.com';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3-gqL1JomY0DhEaMhA4_h8I-5tFYZ_lOcKSVXZ41ZZgk3_qDv2__zOi_dYnJ1qStoPg/exec';
 
     let selectedSet = new Set();
 
-    // 確保頁面加載完才渲染圖片
+    // 初始化：當視窗加載完成後渲染圖片
     window.onload = () => {
         renderGrid();
     };
@@ -75,11 +75,11 @@
             const card = document.createElement('div');
             card.className = 'card';
             
-            // 這裡對應你改名後的檔案：logo1.png, logo2.png...
+            // 對應你的新檔名：logo1.png, logo2.png...
             const imgPath = `logo${i}.png`; 
             
             card.innerHTML = `
-                <img src="${imgPath}" alt="Option ${i}" loading="lazy">
+                <img src="${imgPath}" alt="Option ${i}" loading="lazy" onerror="this.src='https://placeholder.com{i}+Missing'">
                 <div class="info">選項 ${i}</div>
             `;
             card.onclick = () => toggleSelect(i, card);
@@ -107,6 +107,7 @@
         const name = nameInput ? nameInput.value.trim() : "";
         const count = selectedSet.size;
         document.getElementById('vote-count').innerText = count;
+        // 必須填寫姓名且選滿 3 張才能按按鈕
         document.getElementById('submit-btn').disabled = (count !== MAX_VOTES || name === "");
     }
 
@@ -116,9 +117,10 @@
         const btn = document.getElementById('submit-btn');
         
         btn.disabled = true;
-        btn.innerText = "正在提交...";
+        btn.innerText = "提交中...";
 
         try {
+            // 使用 POST 傳送數據到 Google Apps Script
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors', 
@@ -126,10 +128,12 @@
                 body: JSON.stringify({ userName: name, selectedIds: selection }) 
             });
 
+            // 顯示成功介面
             document.getElementById('main-content').classList.add('hidden');
             document.getElementById('msg').classList.remove('hidden');
         } catch (error) {
-            alert("提交失敗，請檢查網路。");
+            console.error('Error:', error);
+            alert("提交失敗，請檢查網路連線。");
             btn.disabled = false;
             btn.innerText = "確認提交投票";
         }
