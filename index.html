@@ -3,151 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>公司圖片投票系統</title>
+    <title>公司圖片最終決賽 (3選1)</title>
     <style>
-        :root { --primary: #007bff; --bg: #f8f9fa; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); text-align: center; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .header { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        :root { --primary: #d62828; --bg: #fdfdfd; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); text-align: center; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 30px; }
         
         .login-box { margin: 20px 0; padding: 15px; border-top: 1px solid #eee; }
-        input[type="text"] { padding: 12px; width: 280px; border-radius: 8px; border: 2px solid #ddd; font-size: 1rem; outline: none; transition: 0.3s; }
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(0,123,255,0.2); }
+        label { display: block; margin-bottom: 10px; font-weight: bold; color: #555; }
+        input[type="text"] { padding: 12px; width: 80%; max-width: 300px; border-radius: 8px; border: 2px solid #ddd; font-size: 1rem; outline: none; transition: 0.3s; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(214,40,40,0.2); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 12px; overflow: hidden; border: 4px solid transparent; cursor: pointer; transition: 0.25s; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .card:hover { transform: translateY(-5px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 20px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; border: 5px solid transparent; cursor: pointer; transition: 0.3s; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-8px); }
         
-        .card.selected { border-color: var(--primary); transform: scale(1.02); }
-        .card.selected::after { content: "✓"; position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; line-height: 28px; font-weight: bold; }
+        .card.selected { border-color: var(--primary); transform: scale(1.05); }
+        .card.selected::after { content: "🎯 已選擇"; position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; }
-        .info { padding: 10px; font-weight: bold; color: #444; }
+        .card img { width: 100%; height: 300px; object-fit: contain; background: #fff; display: block; border-bottom: 1px solid #eee; }
+        .info { padding: 15px; font-size: 1.3rem; font-weight: 900; color: #222; }
 
-        #submit-btn { margin-top: 40px; padding: 18px 60px; font-size: 1.2rem; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
+        #submit-btn { margin-top: 50px; padding: 18px 80px; font-size: 1.4rem; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 6px 20px rgba(214,40,40,0.4); font-weight: bold; }
         #submit-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
         
         .hidden { display: none; }
-        #msg { font-size: 1.5rem; color: #28a745; margin-top: 100px; padding: 40px; background: white; border-radius: 20px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .back-btn { display: block; margin-top: 20px; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 1rem; }
+        #msg { font-size: 1.8rem; color: #d62828; margin-top: 120px; padding: 50px; background: white; border-radius: 25px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container" id="main-content">
     <div class="header">
-        <h1>📸 公司圖片投票 (17 選 3)</h1>
+        <h1>🏆 最終決選：三強爭霸</h1>
+        <p>請選出你最心儀的作品（每人限投 1 票）</p>
         <div class="login-box">
-            <label style="font-weight: bold; display: block; margin-bottom: 10px;">請輸入你的姓名：</label>
-            <input type="text" id="userName" placeholder="例如: Peter Chan (HK)" oninput="checkForm()">
+            <label>請輸入姓名：</label>
+            <input type="text" id="userName" placeholder="請輸入姓名" oninput="checkForm()">
         </div>
-        <p>請選出 <strong>3 張</strong> 你最喜歡的作品</p>
-        <p style="font-size: 1.1rem;">已選擇：<span id="vote-count" style="color:var(--primary); font-weight:bold;">0</span> / 3</p>
     </div>
 
-    <div class="grid" id="imageGrid"></div>
+    <div class="grid" id="imageGrid">
+        <div class="card" id="card-3" onclick="selectOne(3)">
+            <img src="logo3.png" alt="Option 3" onerror="this.src='https://placeholder.com'">
+            <div class="info">候選作品 3</div>
+        </div>
 
-    <button id="submit-btn" disabled onclick="submitVotes()">確認提交投票</button>
+        <div class="card" id="card-14" onclick="selectOne(14)">
+            <img src="logo14.png" alt="Option 14" onerror="this.src='https://placeholder.com'">
+            <div class="info">候選作品 14</div>
+        </div>
+
+        <div class="card" id="card-17" onclick="selectOne(17)">
+            <img src="logo17.png" alt="Option 17" onerror="this.src='https://placeholder.com'">
+            <div class="info">候選作品 17</div>
+        </div>
+    </div>
+
+    <button id="submit-btn" disabled onclick="submitVotes()">確認提交選票</button>
 </div>
 
 <div id="msg" class="hidden">
-    🎉 <strong>投票成功！</strong><br>
-    數據已傳送到 Google Sheet。<br>
-    <span class="back-btn" onclick="resetForm()">返回再次投票</span>
+    🎉 <strong>投票完成！</strong><br>
+    <p style="font-size: 1.2rem; color: #555; margin-top: 10px;">數據已傳送到決賽表單。</p>
 </div>
 
 <script>
-    const TOTAL_IMAGES = 17;
-    const MAX_VOTES = 3;
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3-gqL1JomY0DhEaMhA4_h8I-5tFYZ_lOcKSVXZ41ZZgk3_qDv2__zOi_dYnJ1qStoPg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLJdUorDooMbXPEi5OdkflkfTGD7ASPHy-CpFK-244cy5SDNQ_njYPtsUNQSIiwlbj/exec';
+    let selectedId = null;
 
-    let selectedSet = new Set();
-
-    // 初始化：當視窗加載完成後渲染圖片
-    window.onload = () => {
-        renderGrid();
-    };
-
-    function renderGrid() {
-        const grid = document.getElementById('imageGrid');
-        grid.innerHTML = ""; 
-        for (let i = 1; i <= TOTAL_IMAGES; i++) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            
-            // 對應你的新檔名：logo1.png, logo2.png...
-            const imgPath = `logo${i}.png`; 
-            
-            card.innerHTML = `
-                <img src="${imgPath}" alt="Option ${i}" loading="lazy" onerror="this.src='https://placeholder.com{i}+Missing'">
-                <div class="info">選項 ${i}</div>
-            `;
-            card.onclick = () => toggleSelect(i, card);
-            grid.appendChild(card);
-        }
-    }
-
-    function toggleSelect(id, element) {
-        if (selectedSet.has(id)) {
-            selectedSet.delete(id);
-            element.classList.remove('selected');
-        } else {
-            if (selectedSet.size >= MAX_VOTES) {
-                alert(`最多只能選 ${MAX_VOTES} 張圖！`);
-                return;
-            }
-            selectedSet.add(id);
-            element.classList.add('selected');
-        }
+    function selectOne(id) {
+        document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
+        selectedId = id;
+        document.getElementById(`card-${id}`).classList.add('selected');
         checkForm();
     }
 
     function checkForm() {
-        const nameInput = document.getElementById('userName');
-        const name = nameInput ? nameInput.value.trim() : "";
-        const count = selectedSet.size;
-        document.getElementById('vote-count').innerText = count;
-        // 必須填寫姓名且選滿 3 張才能按按鈕
-        document.getElementById('submit-btn').disabled = (count !== MAX_VOTES || name === "");
+        const name = document.getElementById('userName').value.trim();
+        document.getElementById('submit-btn').disabled = (selectedId === null || name === "");
     }
 
     async function submitVotes() {
         const name = document.getElementById('userName').value.trim();
-        const selection = Array.from(selectedSet).sort((a,b)=>a-b).join(", ");
         const btn = document.getElementById('submit-btn');
-        
         btn.disabled = true;
         btn.innerText = "提交中...";
 
+        // 改用 URLSearchParams 格式傳送，配合 GAS 的 e.parameter 讀取
+        const params = new URLSearchParams();
+        params.append('userName', name);
+        params.append('selectedIds', "Final: " + selectedId);
+
         try {
-            // 使用 POST 傳送數據到 Google Apps Script
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userName: name, selectedIds: selection }) 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString() 
             });
 
-            // 顯示成功介面
             document.getElementById('main-content').classList.add('hidden');
             document.getElementById('msg').classList.remove('hidden');
         } catch (error) {
             console.error('Error:', error);
             alert("提交失敗，請檢查網路連線。");
             btn.disabled = false;
-            btn.innerText = "確認提交投票";
+            btn.innerText = "確認提交選票";
         }
     }
-
-    function resetForm() {
-        selectedSet.clear();
-        document.getElementById('userName').value = "";
-        document.getElementById('main-content').classList.remove('hidden');
-        document.getElementById('msg').classList.add('hidden');
-        renderGrid();
-        checkForm();
-    }
 </script>
-
 </body>
 </html>
